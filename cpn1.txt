@@ -1,0 +1,1 @@
+<article class="ant-typography sc-16841830-3 sc-16841830-4 beVEwi eitsig css-korlfx" color="white" weight="600" style="width: 80%;">Hạng vé RADIANT</article>

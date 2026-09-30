@@ -1,0 +1,1 @@
+<input readonly="" class="ant-input css-korlfx ant-input-outlined" type="text" value="0" style="min-width: 40px; max-width: 50px; text-align: center;">

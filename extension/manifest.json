@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Ticketbox • Canh vé",
+  "version": "1.0.5",
+  "description": "Canh giờ, chọn đúng hạng vé và chuyển sang bước tiếp theo trên một tab Ticketbox.",
+  "minimum_chrome_version": "120",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://ticketbox.vn/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Ticketbox • Canh vé" },
+  "content_scripts": [{
+    "matches": ["https://ticketbox.vn/*"],
+    "js": ["core.js", "dom.js", "content.js"],
+    "run_at": "document_idle"
+  }]
+}

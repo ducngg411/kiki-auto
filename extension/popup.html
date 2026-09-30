@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ticketbox · Canh vé</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header><h1>Canh vé Ticketbox</h1><span id="version"></span></header>
+<main>
+<form id="settings" novalidate>
+<section>
+  <div class="segmented" role="radiogroup" aria-label="Chế độ chạy">
+    <label><input type="radio" name="entryMode" value="scheduled" checked>Canh giờ mở bán</label>
+    <label><input type="radio" name="entryMode" value="direct">Vào thẳng trang chọn vé</label>
+  </div>
+  <p class="hint" id="directHint" hidden>Hẹn giờ tại tab sự kiện hoặc tab chọn vé. Đến giờ đã chọn (đúng giờ hoặc sớm theo số ms), tool tự mở link chọn vé; nếu đang ở trong và giỏ trống thì tải lại. Sau đó chạy flow chọn vé như thường. Giữ trang chỉ áp dụng sau lượt tải đầu; có vé trong giỏ hoặc CAPTCHA thì hoãn tải.</p>
+  <label class="field"><span>Link trang sự kiện</span><input name="eventUrl" type="url" required></label>
+  <div class="field">
+    <label for="insideUrl">Link trang chọn vé</label>
+    <div class="joined"><input id="insideUrl" name="insideUrl" type="url" required><button type="button" id="openInside" class="secondary">Mở trong tab này</button></div>
+  </div>
+  <div class="row">
+    <label class="field"><span>Hạng vé</span><input name="tier" required></label>
+    <label class="field narrow"><span>Số lượng</span><input name="quantity" type="number" min="1" max="20" required></label>
+  </div>
+</section>
+<section id="scheduleSection">
+  <div class="section-head"><h2>Canh giờ</h2><span class="note">Giờ Việt Nam, UTC+7</span></div>
+  <label class="field"><span>Ngày, giờ mở bán</span><input name="saleTime" type="datetime-local" step="1" required><span class="hint" id="saleHint"></span></label>
+  <div class="row">
+    <label class="field"><span>Tải trang</span><select name="mode"><option value="exact">Đúng giờ mở bán</option><option value="early">Trước giờ mở bán</option></select></label>
+    <label class="field narrow"><span>Tải sớm (ms)</span><input name="leadMs" type="number" min="0" max="60000" step="50"></label>
+  </div>
+  <label class="check"><input name="earlyBuy" type="checkbox">Nút mua mở sớm thì bấm ngay, không chờ đến giờ</label>
+  <label class="check"><input name="keepInside" type="checkbox">Đang ở trang chọn vé thì giữ nguyên, không tải lại</label>
+  <label class="check"><input name="exactFallback" type="checkbox">Khi tải sớm: tải thêm một lần lúc đúng giờ nếu chưa vào được</label>
+  <details>
+    <summary>Tải lại khi vé chưa mở</summary>
+    <div class="stack">
+      <label class="check"><input name="retryRefresh" type="checkbox">Tiếp tục tải lại sau giờ mở bán</label>
+      <div class="row">
+        <label class="field"><span>Chu kỳ (ms)</span><input name="retryMs" type="number" min="3000" max="60000" step="1000"></label>
+        <label class="field"><span>Giới hạn lượt</span><input name="maxRefresh" type="number" min="1" max="30"></label>
+      </div>
+      <p class="hint">Giữ trang chọn vé được ưu tiên hơn tải lại. Khi đã có vé trong giỏ, tool ngừng tải lại.</p>
+    </div>
+  </details>
+</section>
+<section id="clockSection">
+  <div class="section-head"><h2>Đồng hồ</h2><button type="button" id="sync" class="secondary small">Đo giờ</button></div>
+  <label class="field"><span>Nguồn thời gian</span><select name="clockMode"><option value="auto">Tự động: HTTP Date + Age</option><option value="manual">Thủ công: HTTP Date + số phút bù</option><option value="local">Đồng hồ máy</option></select></label>
+  <label class="field" id="manualField"><span>Số phút bù vào Date</span><input name="manualMinutes" type="number" min="-120" max="120"><span class="hint">45 = cộng 45 phút vào Date. Giá trị này thay cho Age, không cộng hai lần.</span></label>
+  <output id="clock" class="empty">Chưa đo giờ</output>
+  <p class="hint">Giờ HTTP/CDN chỉ là ước tính, không phải đồng hồ của hệ thống giữ vé. Giữ tab vé ở phía trước và đừng để máy ngủ.</p>
+</section>
+<section>
+  <p class="hint">Tool chọn đủ vé rồi tự bấm <b>Tiếp tục</b>. Nếu gặp CAPTCHA, bạn giải trên trang; tool chờ và chạy tiếp khi xác minh xong. Thông tin và thanh toán bạn tự hoàn tất trên Ticketbox.</p>
+</section>
+</form>
+<section>
+  <details><summary>Nhật ký gần nhất</summary><pre id="logs">Chưa có phiên chạy</pre></details>
+  <details>
+    <summary>Chẩn đoán</summary>
+    <div class="stack"><button type="button" id="diagnose" class="secondary">Kiểm tra nút Tiếp tục</button><pre id="diagnostics"></pre></div>
+  </details>
+</section>
+</main>
+<footer>
+  <output id="status" role="status">Sẵn sàng cấu hình</output>
+  <div class="actions"><button type="submit" form="settings" id="start">Bắt đầu canh vé</button><button type="button" id="stop" class="secondary">Dừng</button></div>
+</footer>
+<script src="core.js"></script><script src="popup.js"></script>
+</body>
+</html>
